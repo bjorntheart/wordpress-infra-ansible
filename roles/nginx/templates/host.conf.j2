@@ -1,0 +1,19 @@
+server {
+    listen              80;
+    listen              [::]:80;
+    server_name         {{ domain }};
+    set                 $base /var/www/{{ domain }};
+    root                $base/public;
+
+    # index.php
+    index               index.php index.html index.htm;
+
+    # logging
+    access_log          /var/log/nginx/{{ domain }}.access.log rt_cache;
+    error_log           /var/log/nginx/{{ domain }}.error.log warn;
+
+    include             common/wpfc-php74.conf;
+    include             common/wpcommon-php74.conf;
+    include             common/locations.conf;
+    include             /var/www/{{ domain }}/conf/nginx/*.conf;
+}

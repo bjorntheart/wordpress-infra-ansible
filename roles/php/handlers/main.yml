@@ -1,0 +1,27 @@
+---
+- name: Reload Webserver
+  ansible.builtin.service:
+    name: "{{ php_webserver_daemon }}"
+    state: reloaded
+  notify: Restart PHP-FPM
+  when: php_enable_webserver
+
+- name: Restart Webserver
+  ansible.builtin.service:
+    name: "{{ php_webserver_daemon }}"
+    state: restarted
+  notify: Restart PHP-FPM
+  when: php_enable_webserver
+
+- name: Start PHP-FPM
+  ansible.builtin.service:
+    name: "{{ php_fpm_daemon }}"
+    state: "{{ php_fpm_state }}"
+
+- name: Restart PHP-FPM
+  ansible.builtin.service:
+    name: "{{ php_fpm_daemon }}"
+    state: "{{ php_fpm_handler_state }}"
+  when:
+    - php_enable_php_fpm
+    - php_fpm_state == 'started'

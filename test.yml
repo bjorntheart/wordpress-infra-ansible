@@ -1,0 +1,21 @@
+---
+- hosts: test
+  remote_user: ubuntu
+  become: true
+  become_method: sudo
+  roles:
+    - base
+    - nginx
+    - php
+    - wordpress
+    - user
+    - cleanup
+
+
+# Original order
+    # - base
+    # - nginx
+    # - php7.4
+    # - user
+    # - geerlingguy.swap
+    # - cleanup

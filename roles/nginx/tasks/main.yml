@@ -1,0 +1,51 @@
+---
+- name: Add Nginx Repository
+  ansible.builtin.apt_repository:
+    repo: ppa:ondrej/nginx
+    state: present
+
+- name: Purge Apache
+  ansible.builtin.apt:
+    name: apache2
+    state: absent
+    update_cache: yes
+
+- name: Install Nginx
+  ansible.builtin.apt:
+    name: '{{ item }}'
+    state: present
+    update_cache: true
+  with_items:
+    - nginx-core
+    - nginx-common
+    - nginx
+    - nginx-full
+    - nginx-extras
+  notify:
+    - Start Nginx
+
+- name: Copy Nginx configuration in place
+  ansible.builtin.template:
+    src: '{{ nginx_conf_template }}'
+    dest: '{{ nginx_conf_file_path }}'
+    owner: root
+    group: '{{ root_group }}'
+    mode: 0644
+  notify:
+    - Reload Nginx
+
+- name: Create Nginx Cache Path
+  ansible.builtin.file:
+    path: "{{ nginx_cache_path }}"
+    state: directory
+    mode: 0700
+    owner: "{{ nginx_user }}"
+    group: "{{ root_group }}"
+
+- import_tasks: host.yml
+
+- name: Ensure Nginx service is running as configured
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: true

@@ -1,0 +1,23 @@
+---
+- name: Ensure configuration directories exist.
+  file:
+    path: "{{ item }}"
+    state: directory
+    follow: true
+    mode: 0755
+  register: conf_dirs
+  loop:
+    - "{{ php_conf_paths }}"
+    - "{{ php_extension_conf_paths }}"
+
+- name: Place PHP configuration file in place.
+  template:
+    src: php.ini.j2
+    dest: "{{ item }}/php.ini"
+    owner: root
+    group: root
+    mode: 0644
+  register: php_ini_files
+  loop: "{{ php_conf_paths }}"
+  when: php_use_managed_ini
+  notify: Reload Webserver

@@ -1,0 +1,19 @@
+---
+swap_file_path: /swapfile
+swap_file_size_mb: '1024'
+swap_swappiness: '10'
+swap_file_state: present
+swap_file_create_command: "dd if=/dev/zero of={{ swap_file_path }} bs=1M count={{ swap_file_size_mb }}"
+
+# LXD containers specific vars
+# The password here is `sekret` and is generated using `mkpasswd --method=SHA-512`
+# `sudo apt install whois` if `mkpasswd` is not on your system
+# I know `sekret` isn't very secure and neither is the hashing algorithm `SHA-512`, but
+# we're only ever going to use the variables on your local machine inside the LXD containers.
+user:
+  admin:
+    name: admin
+    password: $6$cJcs84C4Vm36rh8C$.H8r2BBiGGgz1/lr2OFv9SI5jkGFfMdMoxyzZo.34y1bMEvgNNV45xE94kWlEu4X71u2VO5vQM3QotRQa73mK/
+  deploy:
+    name: deploy
+    password: $6$cJcs84C4Vm36rh8C$.H8r2BBiGGgz1/lr2OFv9SI5jkGFfMdMoxyzZo.34y1bMEvgNNV45xE94kWlEu4X71u2VO5vQM3QotRQa73mK/

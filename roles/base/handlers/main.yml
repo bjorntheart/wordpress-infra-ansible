@@ -1,0 +1,11 @@
+---
+- name: Start NTP
+  ansible.builtin.service:
+    name: ntp
+    state: started
+    enabled: yes
+
+- name: Restart Unattended Upgrades
+  ansible.builtin.service:
+    name: unattended-upgrades
+    state: restarted

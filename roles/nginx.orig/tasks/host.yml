@@ -1,0 +1,89 @@
+---
+- name: Disable Default Site
+  ansible.builtin.file:
+    path: '{{ nginx_sites_enabled_path }}/{{ nginx_default_host }}'
+    state: absent
+  notify:
+    - Restart Nginx
+
+- name: Remove Default Site Config
+  ansible.builtin.file:
+    path: '{{ nginx_sites_available_path }}/default'
+    state: absent
+  notify:
+    - Reload Nginx
+
+- name: Add Managed Site Config
+  ansible.builtin.template:
+    src: '{{ nginx_host_template }}'
+    dest: '{{ nginx_sites_available_path }}/{{ domain }}.conf'
+    force: true
+    owner: root
+    group: '{{ root_group }}'
+    mode: 0644
+  notify:
+    - Reload Nginx
+
+- name: Enable Managed Site Config
+  ansible.builtin.file:
+    src: '{{ nginx_sites_available_path }}/{{ domain }}.conf'
+    dest: '{{ nginx_sites_enabled_path }}/{{ domain }}.conf'
+    owner: root
+    group: '{{ root_group }}'
+    mode: 0644
+    state: link
+  notify:
+    - Reload Nginx
+
+- name: Ensure Snippets Path Exists.
+  ansible.builtin.file:
+    path: etc/nginx/snippets
+    state: directory
+    mode: 0755
+  notify:
+    - Reload Nginx
+
+- name: Copy Snippet Files.
+  ansible.builtin.copy:
+    src: files/snippets/
+    dest: /etc/nginx/snippets/
+    owner: root
+    group: '{{ root_group }}'
+    mode: 0644
+
+- name: Create Web Root
+  ansible.builtin.file:
+    path: /var/www/{{ domain }}/{{ item }}
+    state: directory
+    mode: 0755
+    owner: '{{ nginx_user }}'
+    group: '{{ nginx_group }}'
+  with_items:
+    - conf/nginx
+    - public
+    - logs
+  notify:
+    - Reload Nginx
+
+- name: Symlink Nginx Logs to Web Root
+  ansible.builtin.file:
+    src: /var/log/nginx/{{ domain }}.{{ item }}.log
+    dest: /var/www/{{ domain }}/logs/{{ item }}.log
+    owner: root
+    group: '{{ root_group }}'
+    mode: 0644
+    state: link
+  with_items:
+    - access
+    - error
+
+- name: Web Root Permissions
+  ansible.builtin.file:
+    path: /var/www/{{ domain }}
+    state: directory
+    mode: 0755
+    owner: '{{ nginx_user }}'
+    group: '{{ nginx_group }}'
+    recurse: yes
+  notify:
+    - Reload Nginx

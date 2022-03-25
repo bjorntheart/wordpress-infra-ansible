@@ -1,0 +1,28 @@
+---
+- name: Create Admin User
+  ansible.builtin.user:
+    name: "{{ user.admin.name }}"
+    password: "{{ user.admin.password }}"
+    groups: sudo
+    append: yes
+    shell: /bin/bash
+
+- name: Add Admin Authorised Key
+  ansible.posix.authorized_key:
+    user: "{{ user.admin.name }}"
+    state: present
+    key: "{{ lookup('file', '~/.ssh/id_ansible.pub') }}"
+
+- name: Create Deploy User
+  ansible.builtin.user:
+    name: "{{ user.deploy.name }}"
+    password: "{{ user.deploy.password }}"
+    groups: www-data
+    append: yes
+    shell: /bin/bash
+
+- name: Add Deploy Authorised Key
+  ansible.posix.authorized_key:
+    user: "{{ user.deploy.name }}"
+    state: present
+    key: "{{ lookup('file', '~/.ssh/id_ansible.pub') }}"

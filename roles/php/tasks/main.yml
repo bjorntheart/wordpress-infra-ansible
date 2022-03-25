@@ -1,0 +1,55 @@
+---
+# Variable setup
+- name: Set the default PHP version.
+  set_fact:
+    php_default_version: "{{ __php_default_version }}"
+  when: php_default_version is not defined
+
+- name: Define php_packages.
+  set_fact:
+    php_packages: "{{ __php_packages | list }}"
+  when: php_packages is not defined
+
+- name: Define php_webserver_daemon.
+  set_fact:
+    php_webserver_daemon: "{{ __php_webserver_daemon }}"
+  when: php_webserver_daemon is not defined
+
+- name: Define php_conf_paths.
+  set_fact:
+    php_conf_paths: "{{ __php_conf_paths }}"
+  when: php_conf_paths is not defined
+
+- name: Define php_extension_conf_paths.
+  set_fact:
+    php_extension_conf_paths: "{{ __php_extension_conf_paths }}"
+  when: php_extension_conf_paths is not defined
+
+- name: Define php_opcache_conf_filename.
+  set_fact:
+    php_opcache_conf_filename: "{{ __php_opcache_conf_filename }}"
+  when: php_opcache_conf_filename is not defined
+
+- name: Define php_fpm_conf_path.
+  set_fact:
+    php_fpm_conf_path: "{{ __php_fpm_conf_path }}"
+  when: php_fpm_conf_path is not defined
+
+# Setup/install tasks.
+- name: Include configurations for PHP on Ubuntu
+  include_tasks: setup-Ubuntu.yml
+
+# Configure PHP
+- name: Include default configurations
+  include_tasks: configure.yml
+
+- name: Include configurations for OpCache
+  include_tasks: configure-opcache.yml
+
+- name: Include configurations for PHP-FPM
+  include_tasks: configure-fpm.yml
+
+# Install Composer
+- name: Include Composer installation
+  include_tasks: install-composer.yml
+  when: php_install_composer

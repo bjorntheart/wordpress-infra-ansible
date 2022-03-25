@@ -1,0 +1,3 @@
+---
+ansible_host: 10.239.155.204
+domain: dev.velosure.com.au

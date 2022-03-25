@@ -1,0 +1,46 @@
+# Define path to cache and memory zone. The memory zone should be unique.
+# key_zone=WORDPRESS:100m creates the memory zone and sets the maximum size in MBs.
+# inactive=60m will remove cached items that haven't been accessed for 60 minutes or more.
+fastcgi_cache_path /sites/{{ domain }}/cache levels=1:2 keys_zone={{ domain }}:100m inactive=60m;
+
+server {
+    listen              80;
+    listen              [::]:80;
+    server_name         {{ domain }};
+    set                 $base /var/www/{{ domain }};
+    root                $base/public;
+
+    # index.php
+    index               index.php;
+
+    # logging
+    access_log          /var/log/nginx/{{ domain }}.access.log;
+    error_log           /var/log/nginx/{{ domain }}.error.log warn;
+
+    # additional config
+    include             snippets/security.conf;
+    include             snippets/static-files.conf;
+    include             snippets/wordpress.conf;
+    include             snippets/fastcgi-cache.conf;
+
+    # index.php fallback
+    location / {
+        try_files       $uri $uri/ /index.php?$query_string;
+    }
+
+    # handle .php
+    location ~ \.php$ {
+        include                 snippets/php-fastcgi.conf;
+        fastcgi_pass            $upstream;
+
+        # Skip cache based on rules in snippets/fastcgi-cache.conf.
+        fastcgi_cache_bypass    $skip_cache;
+        fastcgi_no_cache        $skip_cache;
+
+        # Define memory zone for caching. Should match key_zone in fastcgi_cache_path above.
+        fastcgi_cache           {{ domain }};
+
+        # Define caching time.
+        fastcgi_cache_valid     60m;
+    }
+}

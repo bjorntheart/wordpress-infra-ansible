@@ -1,0 +1,3 @@
+---
+ansible_host: 10.239.155.154
+domain: c1.com

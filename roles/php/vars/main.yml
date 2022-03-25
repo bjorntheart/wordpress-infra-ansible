@@ -1,0 +1,46 @@
+---
+# Vendor-specific configuration paths on Ubuntu
+__php_default_version: "7.4"
+__php_packages:
+  - php{{ php_default_version }}
+  - php{{ php_default_version }}-fpm
+  - libpcre3-dev
+  - php{{ php_default_version }}-common
+  - php{{ php_default_version }}-dev
+  - php{{ php_default_version }}-cli
+  - php{{ php_default_version }}-mysql
+  - php{{ php_default_version }}-curl
+  - php{{ php_default_version }}-json
+  - php{{ php_default_version }}-xml
+  - php{{ php_default_version }}-xmlrpc
+  - php{{ php_default_version }}-gd
+  - php{{ php_default_version }}-imagick
+  - php{{ php_default_version }}-bcmath
+  - php{{ php_default_version }}-mcrypt
+  - php{{ php_default_version }}-memcached
+  - php{{ php_default_version }}-opcache
+  - php{{ php_default_version }}-redis
+  - php{{ php_default_version }}-soap
+  - php{{ php_default_version }}-intl
+  - php{{ php_default_version }}-imap
+  - php{{ php_default_version }}-readline
+  - php{{ php_default_version }}-zip
+  - php{{ php_default_version }}-mbstring
+
+__php_webserver_daemon: "nginx"
+
+__php_conf_paths:
+  - /etc/php/{{ php_default_version }}/fpm
+  - /etc/php/{{ php_default_version }}/cli
+
+__php_extension_conf_paths:
+  - /etc/php/{{ php_default_version }}/fpm/conf.d
+  - /etc/php/{{ php_default_version }}/cli/conf.d
+
+__php_opcache_conf_filename: 10-opcache.ini
+__php_fpm_daemon: php{{ php_default_version }}-fpm
+__php_fpm_conf_path: "/etc/php/{{ php_default_version }}/fpm"
+__php_fpm_pool_conf_path: "{{ __php_fpm_conf_path }}/pool.d/www.conf"
+
+__php_fpm_pool_user: www-data
+__php_fpm_pool_group: www-data

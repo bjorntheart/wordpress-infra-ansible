@@ -1,0 +1,10 @@
+---
+# EC2 servers specific vars
+# Should fetch these from SSM, Secrets Manager, or Ansible Vault
+user:
+  admin:
+    name: ''
+    password: ''
+  deploy:
+    name: ''
+    password: ''

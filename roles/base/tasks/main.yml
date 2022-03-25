@@ -1,0 +1,49 @@
+---
+- name: Perform Safe Upgrade
+  ansible.builtin.apt:
+    upgrade: safe
+    update_cache: yes
+
+- name: Add Neovim Repository
+  ansible.builtin.apt_repository:
+    repo: ppa:neovim-ppa/stable
+    state: present
+
+- name: Install Server Basics
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: true
+  with_items:
+    - acl
+    - unattended-upgrades
+    - policykit-1
+    - ntp
+    - wget
+    - curl
+    - neovim
+    - silversearcher-ag
+    - git
+    - unzip
+    - htop
+    - tmux
+    - util-linux
+    - net-tools
+  notify:
+    - Start NTP
+
+- name: Add Periodic Configuration
+  ansible.builtin.copy:
+    src: 10periodic
+    dest: /etc/apt/apt.conf.d/10periodic
+    owner: root
+    group: root
+
+- name: Add Unattended Upgrade Configuration
+  ansible.builtin.copy:
+    src: 50unattended-upgrades
+    dest: /etc/apt/apt.conf.d/50unattended-upgrades
+    owner: root
+    group: root
+  notify:
+    - Restart Unattended Upgrades

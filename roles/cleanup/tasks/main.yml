@@ -1,0 +1,5 @@
+---
+- name: Purge unwanted packages from system.
+  ansible.builtin.apt:
+    autoremove: yes
+    purge: yes
